@@ -613,6 +613,29 @@
     </div>
 
     <script src="app.js"></script>
+    <!-- Contact Decision Modal -->
+    <div id="contact-decision-modal"
+        class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-lg z-[110] flex items-center justify-center p-4 transition-all duration-300">
+        <div
+            class="bg-white rounded-[2.5rem] w-full max-w-sm mx-auto shadow-[0_20px_50px_rgba(0,0,0,0.3)] relative p-8 animate-scale-up border border-slate-100 text-center">
+            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i data-lucide="phone-call" class="w-10 h-10 text-blue-600"></i>
+            </div>
+            <h3 class="text-2xl font-extrabold text-slate-900 mb-2">Lead Added!</h3>
+            <p class="text-slate-500 mb-8">Would you like to contact this person right now or save it for later?</p>
+
+            <div class="space-y-3">
+                <button onclick="handleContactChoice('now')"
+                    class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="phone" class="w-5 h-5"></i> Contact Now
+                </button>
+                <button onclick="handleContactChoice('later')"
+                    class="w-full py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl transition-all">
+                    Save for Later
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

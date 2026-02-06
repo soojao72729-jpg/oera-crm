@@ -197,6 +197,7 @@ function setupNavigation() {
                 link.classList.add('active', 'text-sky-400', 'bg-sky-500/10');
 
                 state.currentTab = tab;
+                saveState(); // Save the current tab so it persists on refresh
                 renderContent();
             }
         });
@@ -1576,6 +1577,7 @@ function handleAddLead(e) {
 
     state.companies.unshift(newLead);
     lastAddedLeadId = newLead.company_id;
+
     saveState();
 
     // Immediate Cloud Sync if available
