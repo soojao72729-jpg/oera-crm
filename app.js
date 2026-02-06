@@ -570,7 +570,7 @@ function handleImportState(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    if (!confirm('Are you sure you want to import this file? It will replace all your current leads, deals, and settings.')) {
+    if (!confirm('Would you like to MERGE this data with your current records? This will add new leads and update existing ones without deleting your current data.')) {
         event.target.value = '';
         return;
     }
@@ -578,21 +578,38 @@ function handleImportState(event) {
     const reader = new FileReader();
     reader.onload = (e) => {
         try {
-            const importedState = JSON.parse(e.target.result);
+            const imported = JSON.parse(e.target.result);
 
-            // Basic validation
-            if (!importedState.companies || !importedState.deals) {
+            if (!imported.companies || !imported.deals) {
                 throw new Error('Invalid file format');
             }
 
-            // Sync Logic: Overwrite local state
-            state = importedState;
-            saveState();
-            showToast('Data Synced Successfully! Refreshing...');
+            // Helper for Smart Merging
+            const merge = (local, incoming, key) => {
+                const map = new Map();
+                if (Array.isArray(local)) local.forEach(item => map.set(item[key], item));
+                if (Array.isArray(incoming)) incoming.forEach(item => map.set(item[key], item));
+                return Array.from(map.values());
+            };
 
-            setTimeout(() => {
-                location.reload();
-            }, 1000);
+            // Perform Merge
+            state.companies = merge(state.companies, imported.companies, 'company_id');
+            state.deals = merge(state.deals, imported.deals, 'deal_id');
+
+            if (imported.activities) {
+                state.activities = merge(state.activities || [], imported.activities, 'id');
+            }
+
+            state.total_calls_made = Math.max(state.total_calls_made || 0, imported.total_calls_made || 0);
+
+            saveState();
+            showToast('Data Merged Successfully! Current data preserved.');
+
+            // Re-render UI
+            renderContent();
+
+            // Success reset
+            event.target.value = '';
 
         } catch (err) {
             alert('Error: Failed to import file. Make sure it is a valid OERA backup file.');
