@@ -584,9 +584,11 @@ function handleImportState(event) {
                 return Array.from(map.values());
             };
 
-            // Perform Merge
+            // Perform Merge for ALL tables (CRM + Admin)
             state.companies = merge(state.companies, imported.companies, 'company_id');
             state.deals = merge(state.deals, imported.deals, 'deal_id');
+            state.users = merge(state.users || [], imported.users || [], 'user_id');
+            state.pending_users = merge(state.pending_users || [], imported.pending_users || [], 'user_id');
 
             if (imported.activities) {
                 state.activities = merge(state.activities || [], imported.activities, 'id');
@@ -595,7 +597,7 @@ function handleImportState(event) {
             state.total_calls_made = Math.max(state.total_calls_made || 0, imported.total_calls_made || 0);
 
             saveState();
-            showToast('Data Merged Successfully! Current data preserved.');
+            showToast('Full System Data Merged! Admin settings and Users updated.');
 
             // Re-render UI
             renderContent();
