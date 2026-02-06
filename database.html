@@ -87,8 +87,8 @@
 
     <!-- Permission Modal -->
     <div id="permission-modal"
-        class="fixed inset-0 bg-slate-900/50 hidden flex items-center justify-center z-50 backdrop-blur-sm">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-soft-entry">
+        class="fixed inset-0 bg-slate-900/50 hidden z-50 backdrop-blur-sm overflow-y-auto px-4 py-8">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-auto animate-soft-entry relative">
             <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <h3 class="font-bold text-slate-800" id="perm-modal-title">Access Control</h3>
                 <button onclick="closePermModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"
