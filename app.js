@@ -682,20 +682,26 @@ async function syncWithCloud() {
     if (!url) return;
 
     try {
+        console.log("OERA: Initiating Cloud Sync...");
         const response = await fetch(url, {
             method: 'POST',
-            mode: 'no-cors', // Apps script CORS limitation
-            headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify(state)
         });
 
-        // Note: no-cors mode doesn't return response body, so for true two-way sync
-        // we normally need a small proxy or use 'cors' mode with specific script setup.
-        // For now, this PUSHES data to cloud live.
-        console.log("Cloud Sync: Data Pushed Successfully");
-        showToast("Cloud Synced ☁️");
+        const serverData = await response.json();
+
+        if (serverData && serverData.companies) {
+            // Update local state with server merged data
+            state = serverData;
+            saveState();
+            renderContent();
+            console.log("OERA: Cloud Sync Success (Two-way)");
+            showToast("Cloud Synced ☁️");
+        }
     } catch (err) {
         console.error("Cloud Sync Failed:", err);
+        // Fallback for no-cors/CORS issues - still pushes but doesn't pull
+        fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify(state) });
     }
 }
 
