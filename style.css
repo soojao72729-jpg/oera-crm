@@ -283,7 +283,7 @@ body {
     }
 
     /* Professional Modal Fixes for Mobile */
-    .fixed.inset-0.overflow-y-auto {
+    .fixed.inset-0.overflow-y-auto:not(.hidden) {
         display: block !important;
         padding: 0.5rem !important;
         background: rgba(15, 23, 42, 0.9) !important;
