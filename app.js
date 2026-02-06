@@ -1622,7 +1622,7 @@ function handleAddLead(e) {
     // Handle Custom Industry
     let industry = formData.get('industry');
     if (industry === 'Other') {
-        industry = formData.get('custom_industry') || 'Other';
+        industry = formData.get('other_industry') || 'Other';
     }
 
     const newLead = {
@@ -1662,6 +1662,10 @@ function handleAddLead(e) {
     state.companies.unshift(newLead);
     lastAddedLeadId = newLead.company_id;
     saveState();
+
+    // Immediate Cloud Sync if available
+    if (state.settings?.cloudSyncUrl) syncWithCloud();
+
     renderContent();
 
     // Close Add Modal and Open Decision Modal
