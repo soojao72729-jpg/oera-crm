@@ -1,17 +1,9 @@
-// Migration: Handle rebranding from Nexus to OERA
-if (!localStorage.getItem('oera_state') && localStorage.getItem('nexus_state')) {
-    localStorage.setItem('oera_state', localStorage.getItem('nexus_state'));
-}
-if (!localStorage.getItem('oera_auth') && localStorage.getItem('nexus_auth')) {
-    localStorage.setItem('oera_auth', localStorage.getItem('nexus_auth'));
-}
-
-// --- Strict Authentication Gate (Session Based) ---
+// --- Strict Authentication Gate ---
 if (sessionStorage.getItem('oera_auth') !== 'true') {
     window.location.href = 'login.html';
 }
 
-// --- State Management with Persistence (Feature 2) ---
+// --- Unified State Management (Poora Software Data) ---
 const defaultState = {
     currentTab: 'dashboard',
     user: null,

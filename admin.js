@@ -336,12 +336,7 @@ function factoryReset() {
 function save() {
     const dataStr = JSON.stringify(data);
     localStorage.setItem(STORAGE_KEY, dataStr);
-
-    // Silent Desktop Backup (Unified)
-    if (window.electronAPI) {
-        const fileName = `OERA_ADMIN_SAVE_${new Date().toISOString().split('T')[0]}_${new Date().getHours()}-${new Date().getMinutes()}.json`;
-        window.electronAPI.saveBackup(dataStr, fileName);
-    }
+    showToast('Database saved to permanent storage!');
 }
 
 // Auto-backup logic removed as per user request
