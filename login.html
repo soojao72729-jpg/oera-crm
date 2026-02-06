@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | OERA Sales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="h-screen flex items-center justify-center relative overflow-hidden">
+
+    <!-- Background Objects -->
+    <div class="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-blue-600/20 blur-[100px]"></div>
+    <div class="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-purple-600/20 blur-[100px]">
+    </div>
+
+    <div class="glass p-8 rounded-2xl w-full max-w-md relative z-10 mx-4 border border-slate-700/50 shadow-2xl">
+        <div class="text-center mb-8">
+            <img src="logo.png" alt="OERA Logo" class="h-16 w-16 rounded-2xl shadow-lg mx-auto mb-4 object-cover">
+            <h1 class="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+            <p class="text-slate-400">Sign in to OERA Sales CRM</p>
+        </div>
+
+        <div class="flex border-b border-slate-700/50 mb-6">
+            <button onclick="switchTab('login')" id="tab-login"
+                class="flex-1 pb-2 text-sm font-medium text-blue-400 border-b-2 border-blue-500 transition-colors">Login</button>
+            <button onclick="switchTab('signup')" id="tab-signup"
+                class="flex-1 pb-2 text-sm font-medium text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition-colors">Request
+                Access</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4 animate-fade-in-up">
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-1">Username / Email</label>
+                <input type="text" name="email" placeholder="Enter username"
+                    class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-slate-600">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-1">Password</label>
+                <input type="password" name="password" placeholder="•••••"
+                    class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-slate-600">
+            </div>
+
+            <div class="flex items-center justify-between text-sm">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" class="rounded bg-slate-800 border-slate-700 text-blue-500 focus:ring-0">
+                    <span class="text-slate-400">Remember me</span>
+                </label>
+                <a href="#" class="text-blue-400 hover:text-blue-300">Forgot Password?</a>
+            </div>
+
+            <button type="submit"
+                class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-blue-500/20 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
+                Sign In
+            </button>
+        </form>
+
+        <!-- Signup Form -->
+        <form id="signup-form" onsubmit="handleSignup(event)" class="space-y-4 hidden animate-fade-in-up">
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-1">Full Name</label>
+                <input type="text" name="name" required placeholder="e.g. John Smith"
+                    class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-all placeholder-slate-600">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-1">Desired Username</label>
+                <input type="text" name="username" required placeholder="e.g. johnsmith"
+                    class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-all placeholder-slate-600">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-1">Password</label>
+                <input type="password" name="password" required
+                    class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-all placeholder-slate-600">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-1">Profile Picture (Optional)</label>
+                <input type="file" name="profile_pic" accept="image/*"
+                    class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 transition-all">
+            </div>
+            <button type="submit"
+                class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-emerald-500/20 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
+                Submit Request
+            </button>
+        </form>
+
+        <div class="mt-8 pt-6 border-t border-slate-700/50 text-center">
+            <p class="text-slate-500 text-sm mb-4">Don't have an account? <a href="#"
+                    class="text-white hover:underline">Contact Admin</a></p>
+
+            <div class="pt-4 border-t border-slate-700/10">
+                <p class="text-slate-600 text-[10px] mb-2 uppercase tracking-widest">Technical Support</p>
+                <button onclick="masterReset()"
+                    class="text-xs font-bold text-red-500/60 hover:text-red-400 transition-colors">
+                    Click here for Master System Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const tabLogin = document.getElementById('tab-login');
+            const tabSignup = document.getElementById('tab-signup');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                tabLogin.className = 'flex-1 pb-2 text-sm font-medium text-blue-400 border-b-2 border-blue-500 transition-colors';
+                tabSignup.className = 'flex-1 pb-2 text-sm font-medium text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition-colors';
+            } else {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                tabSignup.className = 'flex-1 pb-2 text-sm font-medium text-emerald-400 border-b-2 border-emerald-500 transition-colors';
+                tabLogin.className = 'flex-1 pb-2 text-sm font-medium text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition-colors';
+            }
+        }
+
+        // Auto-Clear Auth on Load (Security)
+        window.onload = () => {
+            // Migration check
+            if (!localStorage.getItem('oera_state') && localStorage.getItem('nexus_state')) {
+                localStorage.setItem('oera_state', localStorage.getItem('nexus_state'));
+            }
+            sessionStorage.removeItem('oera_auth');
+            localStorage.removeItem('oera_auth'); // Clean up old system if exists
+
+            // --- FORCED ADMIN INJECTION ---
+            let state = JSON.parse(localStorage.getItem('oera_state'));
+            if (!state) {
+                state = defaultState;
+            }
+            if (!state.users) state.users = [];
+
+            // Check if admin exists
+            const adminExists = state.users.some(u => u.email === 'admin');
+            if (!adminExists) {
+                state.users.push({ user_id: 1, name: 'Fasih Haidar', role: 'Admin', email: 'admin', password: 'admin', profile_pic: null, permissions: ['dashboard', 'CRM', 'pipeline', 'activity', 'settings', 'sync', 'database'] });
+                localStorage.setItem('oera_state', JSON.stringify(state));
+                console.log("Admin account injected.");
+            }
+        }
+
+        function masterReset() {
+            if (confirm("⚠️ WARNING: This will DELETE ALL DATA (Leads, Deals, Users) and reset everything to factory defaults. Continue?")) {
+                localStorage.clear();
+                alert("System Reset Complete. Page will reload.");
+                location.reload();
+            }
+        }
+
+        const defaultState = {
+            currentTab: 'dashboard',
+            user: null,
+            users: [
+                { user_id: 1, name: 'Fasih Haidar', role: 'Admin', email: 'admin', password: 'admin', profile_pic: null }
+            ],
+            companies: [],
+            deals: [],
+            activities: [],
+            total_calls_made: 0
+        };
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = form.querySelector('button');
+            const email = form.email.value;
+            const password = form.password.value;
+
+            btn.innerHTML = 'Verifying...';
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            // 1. Fetch Users (Initialize if empty or corrupted)
+            let state = JSON.parse(localStorage.getItem('oera_state'));
+            if (!state || !state.users || state.users.length === 0) {
+                state = defaultState;
+                localStorage.setItem('oera_state', JSON.stringify(state));
+            }
+
+            // 2. Validate Credentials
+            const user = state.users.find(u => u.email === email && u.password === password);
+
+            setTimeout(() => {
+                if (user) {
+                    // Update Active User in State
+                    state.user = user;
+                    localStorage.setItem('oera_state', JSON.stringify(state));
+                    sessionStorage.setItem('oera_auth', 'true');
+
+                    // Smart Redirect: Use LocalStorage for reliability across files
+                    setTimeout(() => {
+                        let target = localStorage.getItem('oera_redirect') || 'index.html';
+                        localStorage.removeItem('oera_redirect'); // Clean up
+                        window.location.href = target;
+                    }, 100);
+                } else {
+                    alert('Invalid credentials! (Admin Check: ' + (user ? 'Found' : 'Not Found') + ')');
+                    btn.innerHTML = 'Sign In';
+                    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                }
+            }, 800);
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = form.querySelector('button');
+            const file = form.profile_pic.files[0];
+
+            const processSignup = (imageData = null) => {
+                // 1. Get Data
+                const newUser = {
+                    user_id: Date.now(),
+                    name: form.name.value,
+                    email: form.username.value,
+                    password: form.password.value,
+                    role: 'Sales Rep',
+                    target_monthly: 0,
+                    status: 'Pending',
+                    profile_pic: imageData
+                };
+
+                btn.innerHTML = 'Sending Request...';
+                btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+                // 2. Save to Pending List
+                const state = JSON.parse(localStorage.getItem('oera_state')) || {};
+                if (!state.pending_users) state.pending_users = [];
+
+                state.pending_users.push(newUser);
+                localStorage.setItem('oera_state', JSON.stringify(state));
+
+                setTimeout(() => {
+                    alert('Request Sent! Waiting for Admin Approval.');
+                    form.reset();
+                    switchTab('login');
+                    btn.innerHTML = 'Submit Request';
+                    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                }, 1000);
+            };
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => processSignup(reader.result);
+                reader.readAsDataURL(file);
+            } else {
+                processSignup();
+            }
+        }
+    </script>
+</body>
+
+</html>

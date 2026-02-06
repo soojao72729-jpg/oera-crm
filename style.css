@@ -1,0 +1,355 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background: #f8fafc;
+    /* Slate 50 */
+    background-image:
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.1) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.1) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(34, 197, 94, 0.1) 0px, transparent 50%);
+    background-attachment: fixed;
+    color: #0f172a;
+    /* Slate 900 */
+    overflow-x: hidden;
+}
+
+/* --- Modern Functional Animations --- */
+
+/* 1. Soft Entry (Page Load / Tab Switch) */
+@keyframes softSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(15px) scale(0.98);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.animate-soft-entry {
+    animation: softSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 2. Staggered Delays for Lists */
+.stagger-1 {
+    animation-delay: 50ms;
+}
+
+.stagger-2 {
+    animation-delay: 100ms;
+}
+
+.stagger-3 {
+    animation-delay: 150ms;
+}
+
+.stagger-4 {
+    animation-delay: 200ms;
+}
+
+.stagger-5 {
+    animation-delay: 250ms;
+}
+
+/* 3. Subtle Float (Hover) */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+.hover-float:hover {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* 4. Click Bounce (Active) */
+.active-bounce:active {
+    transform: scale(0.95);
+    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glassmorphism Utilities (Light Mode + Smooth Transition) */
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(56, 189, 248, 0.3);
+    /* Subtle Blue Tint */
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.08);
+    /* Softer, deeper shadow */
+}
+
+.sidebar-link {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 0.75rem;
+    color: #64748b;
+    /* Slate 500 */
+    font-weight: 500;
+}
+
+.sidebar-transition {
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    background: rgba(56, 189, 248, 0.1);
+    color: #0284c7;
+    /* Sky 600 */
+    padding-left: 1.25rem;
+    /* Slight slide right */
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.2);
+    border-radius: 3px;
+    transition: background 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.4);
+}
+
+/* Kanban Board */
+.kanban-col {
+    min-width: 300px;
+}
+
+.droppable-hover {
+    background: rgba(56, 189, 248, 0.1) !important;
+    border: 2px dashed rgba(56, 189, 248, 0.5) !important;
+    transform: scale(1.02);
+    transition: all 0.2s ease;
+}
+
+/* Dialer / Animations */
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+}
+
+.calling-animation {
+    animation: pulse-ring 2s infinite;
+}
+
+/* Toast Notification */
+.toast-enter {
+    transform: translateX(100%) scale(0.9);
+    opacity: 0;
+}
+
+.toast-enter-active {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* Bouncy Entry */
+}
+
+.toast-exit {
+    transform: translateX(100%) scale(0.9);
+    opacity: 0;
+    transition: all 0.3s ease-in;
+}
+
+/* Mobile Responsiveness (Final Premium Fix) */
+@media (max-width: 768px) {
+    body {
+        display: block !important;
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        padding-top: 70px !important;
+    }
+
+    /* Professional Top Navbar */
+    header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 70px !important;
+        padding: 0 0.75rem !important;
+        background: rgba(255, 255, 255, 0.98) !important;
+        border-bottom: 2px solid rgba(0, 0, 0, 0.05) !important;
+        z-index: 1000 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+    }
+
+    header h1 {
+        font-size: 0.95rem !important;
+        font-weight: 800 !important;
+        max-width: 140px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        margin: 0 !important;
+        flex: 1 !important;
+    }
+
+    header .flex {
+        gap: 0.5rem !important;
+    }
+
+    /* Navigation Menu Toggle Button */
+    header button[onclick="toggleSidebar()"] {
+        padding: 0.5rem !important;
+        background: transparent !important;
+    }
+
+    /* Header Icons Circle Style */
+    header .flex button {
+        width: 40px !important;
+        height: 40px !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    header button span {
+        display: none !important;
+    }
+
+    /* Content Layout */
+    main {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    #content-area {
+        padding: 0.75rem !important;
+    }
+
+    /* Card Spacing */
+    .glass-card {
+        padding: 1.5rem 1.25rem !important;
+        margin-bottom: 1.25rem !important;
+        border-radius: 24px !important;
+    }
+
+    /* Grid Adjustments */
+    .grid-cols-4,
+    .grid-cols-3,
+    .grid-cols-2 {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    /* Button Refinement in Cards */
+    .glass-card button {
+        height: 56px !important;
+        border-radius: 16px !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.75rem !important;
+        font-size: 0.9rem !important;
+    }
+
+    .glass-card button span {
+        font-size: 0.85rem !important;
+        white-space: normal !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+    }
+
+    .glass-card i,
+    .glass-card [data-lucide] {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    /* Sidebar Off-canvas Menu */
+    aside {
+        position: fixed !important;
+        left: -100% !important;
+        top: 0 !important;
+        width: 85% !important;
+        max-width: 320px !important;
+        height: 100vh !important;
+        z-index: 5000 !important;
+        background: white !important;
+        box-shadow: 20px 0 60px rgba(0, 0, 0, 0.2) !important;
+        transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        overflow-y: auto !important;
+    }
+
+    aside.sidebar-open {
+        left: 0 !important;
+    }
+
+    .sidebar-link span {
+        display: block !important;
+    }
+
+    /* Overlay Overlay */
+    .mobile-overlay {
+        position: fixed !important;
+        inset: 0 !important;
+        background: rgba(15, 23, 42, 0.5) !important;
+        backdrop-filter: blur(4px) !important;
+        z-index: 4500 !important;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .mobile-overlay.active {
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+}
