@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
     renderSidebar();
     renderTable();
-    initAutoBackup(); // Start the 30-second timer
+    // Auto-backup removed as per user request
 });
 
 function renderSidebar() {
@@ -344,19 +344,8 @@ function save() {
     }
 }
 
-function initAutoBackup() {
-    if (window.autoBackupTimer) clearInterval(window.autoBackupTimer);
-
-    // Force exactly 30 seconds as requested
-    window.autoBackupTimer = setInterval(() => {
-        if (window.electronAPI) {
-            const dataStr = JSON.stringify(data);
-            const fileName = 'OERA_LATEST_AUTO_SYNC.json'; // Fixed name for silent sync
-            window.electronAPI.saveBackup(dataStr, fileName);
-            console.log("Admin Panel: Syncing to OERA_LATEST_AUTO_SYNC.json");
-        }
-    }, 30000);
-}
+// Auto-backup logic removed as per user request
+function initAutoBackup() { }
 
 function showToast(msg) {
     const toast = document.createElement('div');

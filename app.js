@@ -23,10 +23,7 @@ const defaultState = {
     activities: [],
     total_calls_made: 0,
     dialer: { isOpen: false, number: '', status: 'ready' },
-    settings: {
-        autoBackup: true,
-        autoBackupInterval: 0.5 // 30 seconds
-    }
+    settings: {}
 };
 
 // --- Global State & Config ---
@@ -140,8 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
         checkPortfolioRequests(); // Initial check
     }
 
-    // --- Auto Backup System ---
-    initAutoBackup();
+    // --- Manual Backup Only ---
+    // Auto-backup removed as per user request
 
     // Update Sidebar Profile
     const user = state.user || { name: 'Guest', role: 'Visitor' };
@@ -431,67 +428,39 @@ function renderSync(container) {
                     </div>
                 </div>
             </div>
-            <!-- Auto-Backup Settings -->
+            <!-- Manual Data Portability -->
             <div class="glass-card p-6 rounded-3xl border border-white/60 shadow-sm mt-8 bg-slate-50/50">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
-                            <i data-lucide="history" class="w-5 h-5 text-amber-600"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-slate-800">Auto-Backup System</h4>
-                            <p class="text-xs text-slate-500">Automatically downloads a safety backup file every 30 seconds.</p>
-                        </div>
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+                        <i data-lucide="share-2" class="w-5 h-5 text-emerald-600"></i>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" onchange="toggleAutoBackup(this.checked)" class="sr-only peer" ${state.settings?.autoBackup ? 'checked' : ''}>
-                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                <div class="mt-6 pt-6 border-t border-slate-700/10 space-y-3">
-                    <div class="flex items-center justify-between mb-2 text-sm">
-                        <span class="font-bold text-slate-700">Mobile Sharing</span>
+                    <div>
+                        <h4 class="font-bold text-slate-800">Transfer & Share</h4>
+                        <p class="text-xs text-slate-500">Safely move your data between Admin and Workers.</p>
                     </div>
-                    <button onclick="shareToMobile()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20">
-                        <i data-lucide="share-2" class="w-4 h-4"></i> Share Backup via WhatsApp
+                </div>
+
+                <div class="space-y-4">
+                    <button onclick="handleExportState()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-500/20">
+                        <i data-lucide="download" class="w-5 h-5"></i> Export My Data File
                     </button>
 
-                    <div class="mt-6 pt-6 border-t border-slate-700/10 space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="font-bold text-slate-700 text-sm flex items-center gap-2">
-                                <i data-lucide="cloud" class="w-4 h-4 text-blue-500"></i> Live Cloud Sync
-                            </span>
-                            <span class="text-[10px] ${state.settings?.cloudSyncUrl ? 'text-emerald-600' : 'text-slate-400'} font-bold">
-                                ${state.settings?.cloudSyncUrl ? 'ACTIVE' : 'NOT CONFIGURED'}
-                            </span>
-                        </div>
-                        
-                        <div class="space-y-2">
-                            <input type="password" id="cloud-url" placeholder="Paste Google Script URL here..." 
-                                   value="${state.settings?.cloudSyncUrl || ''}"
-                                   class="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                            <button onclick="saveCloudSettings()" class="w-full py-3 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-all">
-                                Connect & Sync Now
-                            </button>
-                        </div>
-                        
-                        <p class="text-[10px] text-slate-400 italic text-center">
-                            Cloud Sync allows multiple workers to see same data live!
+                    <div class="p-4 bg-white rounded-2xl border border-slate-100">
+                        <p class="text-xs font-bold text-slate-700 mb-3 flex items-center gap-2">
+                             <i data-lucide="upload" class="w-4 h-4 text-blue-500"></i> Import Data File
                         </p>
+                        <input type="file" id="import-file" onchange="handleImportState(event)" class="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer w-full">
+                        <p class="text-[10px] text-amber-600 font-bold mt-2">⚠️ WARNING: Importing will overwrite local data.</p>
                     </div>
 
-                    <div class="pt-6 border-t border-slate-100">
-                        <div class="flex items-center justify-between mb-2 text-sm text-slate-500">
-                            <span>Local Device Backup</span>
-                            <span class="font-medium text-blue-600" id="folder-status">
-                                ${window.electronAPI ? (desktopBackupPath || 'Default') : (backupFolderHandle ? 'Linked' : 'Downloads')}
-                            </span>
-                        </div>
-                        <button onclick="${window.electronAPI ? 'chooseDesktopFolder()' : 'requestBackupFolder()'}" class="w-full py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 text-[10px] font-bold rounded-xl transition-all border border-slate-200 uppercase tracking-wider">
-                            Set Local File Destination
-                        </button>
-                    </div>
-                    <p class="text-[10px] text-slate-400 mt-2 italic text-center">
-                        ${window.electronAPI ? 'Desktop App: Silent backups overwrite OERA_LATEST_AUTO_SYNC.json every 30s.' : 'Browser: Due to security, auto-backups will create new files in Downloads.'}
+                    <button onclick="shareToMobile()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-emerald-500/20">
+                        <i data-lucide="message-circle" class="w-5 h-5"></i> Share File via WhatsApp
+                    </button>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-slate-100 text-center">
+                    <p class="text-[10px] text-slate-400 italic">
+                        Manual transfer ensures your data remains private and secure.
                     </p>
                 </div>
             </div>
@@ -632,78 +601,18 @@ function handleImportState(event) {
     reader.readAsText(file);
 }
 
+// Manual Backup Definitions removed for clarity but logic remains in handleExport/Import
 function toggleAutoBackup(enabled) {
-    if (!state.settings) state.settings = { autoBackup: true, autoBackupInterval: 30 };
+    if (!state.settings) state.settings = {}; // Initialize settings if not present
     state.settings.autoBackup = enabled;
     saveState();
     showToast(`Auto-Backup ${enabled ? 'Enabled' : 'Disabled'}`);
 
-    if (enabled) initAutoBackup();
-    else if (window.autoBackupTimer) clearInterval(window.autoBackupTimer);
+    if (!enabled && window.autoBackupTimer) clearInterval(window.autoBackupTimer);
 }
-
-function initAutoBackup() {
-    if (window.autoBackupTimer) clearInterval(window.autoBackupTimer);
-
-    if (state.settings?.autoBackup) {
-        const intervalMs = 30 * 1000;
-        window.autoBackupTimer = setInterval(() => {
-            console.log("OERA: Periodic Sync Triggered");
-
-            // 1. Silent File Backup
-            handleExportState(true);
-
-            // 2. Cloud Sync (If configured)
-            if (state.settings?.cloudSyncUrl) {
-                syncWithCloud();
-            }
-        }, intervalMs);
-    }
-}
-
-async function saveCloudSettings() {
-    const url = document.getElementById('cloud-url').value.trim();
-    if (!url) {
-        alert("Please enter a valid Google Script URL");
-        return;
-    }
-
-    if (!state.settings) state.settings = {};
-    state.settings.cloudSyncUrl = url;
-    saveState();
-
-    showToast("Connecting to Cloud...");
-    await syncWithCloud();
-    renderContent();
-}
-
-async function syncWithCloud() {
-    const url = state.settings?.cloudSyncUrl;
-    if (!url) return;
-
-    try {
-        console.log("OERA: Initiating Cloud Sync...");
-        const response = await fetch(url, {
-            method: 'POST',
-            body: JSON.stringify(state)
-        });
-
-        const serverData = await response.json();
-
-        if (serverData && serverData.companies) {
-            // Update local state with server merged data
-            state = serverData;
-            saveState();
-            renderContent();
-            console.log("OERA: Cloud Sync Success (Two-way)");
-            showToast("Cloud Synced ☁️");
-        }
-    } catch (err) {
-        console.error("Cloud Sync Failed:", err);
-        // Fallback for no-cors/CORS issues - still pushes but doesn't pull
-        fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify(state) });
-    }
-}
+function initAutoBackup() { }
+function saveCloudSettings() { }
+async function syncWithCloud() { }
 
 
 // --- Dashboard Component ---
