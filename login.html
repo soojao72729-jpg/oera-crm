@@ -187,9 +187,13 @@
                 try {
                     const snapshot = await db.ref('oera_state').once('value');
                     const cloudState = snapshot.val();
-                    if (cloudState) {
-                        localStorage.setItem('oera_state', JSON.stringify(cloudState));
-                        console.log("Login Sync: Cloud data updated");
+                    if (cloudState && cloudState.users) {
+                        // Merge only user relevant data into local storage
+                        let local = JSON.parse(localStorage.getItem('oera_state')) || defaultState;
+                        local.users = cloudState.users;
+                        local.pending_users = cloudState.pending_users || [];
+                        localStorage.setItem('oera_state', JSON.stringify(local));
+                        console.log(`Login Sync: Found ${cloudState.users.length} active users.`);
                     }
                 } catch (e) {
                     console.error("Login Sync Failed:", e);
@@ -198,14 +202,14 @@
 
             btn.innerHTML = 'Verifying...';
             // 2. Fetch Users from local (now synced)
-            let state = JSON.parse(localStorage.getItem('oera_state'));
-            if (!state || !state.users || state.users.length === 0) {
-                state = defaultState;
-                localStorage.setItem('oera_state', JSON.stringify(state));
-            }
+            let state = JSON.parse(localStorage.getItem('oera_state')) || defaultState;
+            if (!state.users) state.users = defaultState.users;
 
-            // 3. Validate Credentials
-            const user = state.users.find(u => u.email === email && u.password === password);
+            // 3. Validate Credentials (Case Insensitive)
+            const user = state.users.find(u =>
+                (u.email?.toLowerCase() === email.toLowerCase()) &&
+                u.password === password
+            );
 
             setTimeout(() => {
                 if (user) {

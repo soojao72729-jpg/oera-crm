@@ -140,7 +140,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const cloudData = snapshot.val();
             if (cloudData) {
                 console.log("OERA: Cloud Update Received");
+
+                // CRITICAL: Protect local session from cloud overwrite
+                const currentUser = state.user;
+                const currentTab = state.currentTab;
+
                 state = cloudData;
+
+                // Restore local session
+                state.user = currentUser;
+                state.currentTab = currentTab;
+
                 localStorage.setItem('oera_state', JSON.stringify(state));
 
                 // Refresh UI
