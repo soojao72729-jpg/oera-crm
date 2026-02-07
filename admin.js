@@ -29,7 +29,7 @@ if (!data) {
     alert('Please open the Main App index.html once to initialize the database.');
 }
 
-const tables = ['companies', 'deals', 'call_logs', 'users', 'pending_users'];
+const tables = ['companies', 'deals', 'activities', 'users', 'pending_users'];
 let currentTable = 'companies';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -43,7 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const cloudData = snapshot.val();
             if (cloudData) {
                 console.log("Admin Panel: Cloud Update Received");
+
+                // CRITICAL: Protect the local login session (do not let cloud overwrite who IS logged in)
+                const currentUser = data.user;
                 data = cloudData;
+                data.user = currentUser;
+
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
                 renderSidebar();
                 renderTable();

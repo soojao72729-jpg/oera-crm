@@ -71,14 +71,16 @@ function checkPermissions() {
 function saveState() {
     localStorage.setItem('oera_state', JSON.stringify(state));
 
-    // Realtime Firebase Push (SHARED DATA ONLY)
+    // 🌍 REALTIME GLOBAL SYNC (SHARED DATA ONLY)
     if (typeof db !== 'undefined' && db) {
-        // Create a copy without session info to avoid kicking others out
-        const cloudData = { ...state };
-        delete cloudData.user;
-        delete cloudData.currentTab;
+        const sharedFields = ['companies', 'deals', 'activities', 'users', 'pending_users', 'total_calls_made'];
+        const cloudData = {};
 
-        db.ref('oera_state').set(cloudData).catch(err => console.error("Firebase Push Failed:", err));
+        sharedFields.forEach(field => {
+            if (state[field] !== undefined) cloudData[field] = state[field];
+        });
+
+        db.ref('oera_state').set(cloudData).catch(err => console.error("Firebase Sync Failed:", err));
     }
 }
 
@@ -139,14 +141,14 @@ document.addEventListener('DOMContentLoaded', () => {
         checkPortfolioRequests(); // Initial check
     }
 
-    // --- Firebase Realtime Sync ---
+    // --- 🌍 Firebase Realtime Listener ---
     if (typeof db !== 'undefined' && db) {
         db.ref('oera_state').on('value', (snapshot) => {
             const cloudData = snapshot.val();
             if (cloudData) {
-                console.log("OERA: Cloud Update Received");
+                console.log("OERA: Cloud Sync Update Received");
 
-                // CRITICAL: Merge Cloud Data into Local State without breaking login
+                // Merge ALL shared tables instantly
                 state.companies = cloudData.companies || [];
                 state.deals = cloudData.deals || [];
                 state.users = cloudData.users || state.users;
@@ -156,15 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 localStorage.setItem('oera_state', JSON.stringify(state));
 
-                // Refresh UI
-                checkPermissions();
+                // Live UI Refresh
                 renderContent();
-                setupNavigation();
-
-                // Update Sidebar Profile
-                const user = state.user || { name: 'Guest', role: 'Visitor' };
-                if (document.getElementById('user-name')) document.getElementById('user-name').textContent = user.name;
-                if (document.getElementById('user-role')) document.getElementById('user-role').textContent = user.role;
+                if (state.currentTab === 'dashboard') updateDashboardKPIs();
             }
         });
     }
