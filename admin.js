@@ -36,7 +36,20 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
     renderSidebar();
     renderTable();
-    // Auto-backup removed as per user request
+
+    // Firebase Realtime Listener
+    if (typeof db !== 'undefined' && db) {
+        db.ref('oera_state').on('value', (snapshot) => {
+            const cloudData = snapshot.val();
+            if (cloudData) {
+                console.log("Admin Panel: Cloud Update Received");
+                data = cloudData;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                renderSidebar();
+                renderTable();
+            }
+        });
+    }
 });
 
 function renderSidebar() {
@@ -336,7 +349,15 @@ function factoryReset() {
 function save() {
     const dataStr = JSON.stringify(data);
     localStorage.setItem(STORAGE_KEY, dataStr);
-    showToast('Database saved to permanent storage!');
+
+    // Realtime Firebase Push
+    if (typeof db !== 'undefined' && db) {
+        db.ref('oera_state').set(data).then(() => {
+            showToast('Database Synced to Cloud! ☁️');
+        }).catch(err => console.error("Firebase Admin Push Failed:", err));
+    } else {
+        showToast('Saved locally (Offline)');
+    }
 }
 
 // Auto-backup logic removed as per user request
