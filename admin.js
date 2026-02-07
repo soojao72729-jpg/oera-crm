@@ -350,9 +350,13 @@ function save() {
     const dataStr = JSON.stringify(data);
     localStorage.setItem(STORAGE_KEY, dataStr);
 
-    // Realtime Firebase Push
+    // Realtime Firebase Push (EXCLUDE SESSION)
     if (typeof db !== 'undefined' && db) {
-        db.ref('oera_state').set(data).then(() => {
+        const cloudData = { ...data };
+        delete cloudData.user;
+        delete cloudData.currentTab;
+
+        db.ref('oera_state').set(cloudData).then(() => {
             showToast('Database Synced to Cloud! ☁️');
         }).catch(err => console.error("Firebase Admin Push Failed:", err));
     } else {

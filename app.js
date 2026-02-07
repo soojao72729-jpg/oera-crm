@@ -71,9 +71,14 @@ function checkPermissions() {
 function saveState() {
     localStorage.setItem('oera_state', JSON.stringify(state));
 
-    // Realtime Firebase Push
+    // Realtime Firebase Push (SHARED DATA ONLY)
     if (typeof db !== 'undefined' && db) {
-        db.ref('oera_state').set(state).catch(err => console.error("Firebase Push Failed:", err));
+        // Create a copy without session info to avoid kicking others out
+        const cloudData = { ...state };
+        delete cloudData.user;
+        delete cloudData.currentTab;
+
+        db.ref('oera_state').set(cloudData).catch(err => console.error("Firebase Push Failed:", err));
     }
 }
 
@@ -141,15 +146,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cloudData) {
                 console.log("OERA: Cloud Update Received");
 
-                // CRITICAL: Protect local session from cloud overwrite
-                const currentUser = state.user;
-                const currentTab = state.currentTab;
-
-                state = cloudData;
-
-                // Restore local session
-                state.user = currentUser;
-                state.currentTab = currentTab;
+                // CRITICAL: Merge Cloud Data into Local State without breaking login
+                state.companies = cloudData.companies || [];
+                state.deals = cloudData.deals || [];
+                state.users = cloudData.users || state.users;
+                state.pending_users = cloudData.pending_users || [];
+                state.activities = cloudData.activities || [];
+                state.total_calls_made = cloudData.total_calls_made || 0;
 
                 localStorage.setItem('oera_state', JSON.stringify(state));
 
