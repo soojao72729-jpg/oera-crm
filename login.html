@@ -101,6 +101,11 @@
         </div>
     </div>
 
+    <!-- Firebase SDK (v8 Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+
     <script>
         function switchTab(tab) {
             const loginForm = document.getElementById('login-form');
@@ -166,7 +171,7 @@
             total_calls_made: 0
         };
 
-        function handleLogin(e) {
+        async function handleLogin(e) {
             e.preventDefault();
             const form = e.target;
             const btn = form.querySelector('button');
@@ -176,14 +181,23 @@
             btn.innerHTML = 'Verifying...';
             btn.classList.add('opacity-75', 'cursor-not-allowed');
 
-            // 1. Fetch Users (Initialize if empty or corrupted)
+            // 1. Sync with Firebase first
+            if (typeof db !== 'undefined' && db) {
+                const snapshot = await db.ref('oera_state').once('value');
+                const cloudState = snapshot.val();
+                if (cloudState) {
+                    localStorage.setItem('oera_state', JSON.stringify(cloudState));
+                }
+            }
+
+            // 2. Fetch Users
             let state = JSON.parse(localStorage.getItem('oera_state'));
             if (!state || !state.users || state.users.length === 0) {
                 state = defaultState;
                 localStorage.setItem('oera_state', JSON.stringify(state));
             }
 
-            // 2. Validate Credentials
+            // 3. Validate Credentials
             const user = state.users.find(u => u.email === email && u.password === password);
 
             setTimeout(() => {
@@ -235,6 +249,11 @@
 
                 state.pending_users.push(newUser);
                 localStorage.setItem('oera_state', JSON.stringify(state));
+
+                // Realtime Firebase Push
+                if (typeof db !== 'undefined' && db) {
+                    db.ref('oera_state').set(state);
+                }
 
                 setTimeout(() => {
                     alert('Request Sent! Waiting for Admin Approval.');

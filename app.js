@@ -70,6 +70,11 @@ function checkPermissions() {
 
 function saveState() {
     localStorage.setItem('oera_state', JSON.stringify(state));
+
+    // Realtime Firebase Push
+    if (typeof db !== 'undefined' && db) {
+        db.ref('oera_state').set(state).catch(err => console.error("Firebase Push Failed:", err));
+    }
 }
 
 function manualSave() {
@@ -129,8 +134,27 @@ document.addEventListener('DOMContentLoaded', () => {
         checkPortfolioRequests(); // Initial check
     }
 
-    // --- Manual Backup Only ---
-    // Auto-backup removed as per user request
+    // --- Firebase Realtime Sync ---
+    if (typeof db !== 'undefined' && db) {
+        db.ref('oera_state').on('value', (snapshot) => {
+            const cloudData = snapshot.val();
+            if (cloudData) {
+                console.log("OERA: Cloud Update Received");
+                state = cloudData;
+                localStorage.setItem('oera_state', JSON.stringify(state));
+
+                // Refresh UI
+                checkPermissions();
+                renderContent();
+                setupNavigation();
+
+                // Update Sidebar Profile
+                const user = state.user || { name: 'Guest', role: 'Visitor' };
+                if (document.getElementById('user-name')) document.getElementById('user-name').textContent = user.name;
+                if (document.getElementById('user-role')) document.getElementById('user-role').textContent = user.role;
+            }
+        });
+    }
 
     // Update Sidebar Profile
     const user = state.user || { name: 'Guest', role: 'Visitor' };
