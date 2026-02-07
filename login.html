@@ -182,15 +182,22 @@
             btn.classList.add('opacity-75', 'cursor-not-allowed');
 
             // 1. Sync with Firebase first
+            btn.innerHTML = 'Syncing Cloud...';
             if (typeof db !== 'undefined' && db) {
-                const snapshot = await db.ref('oera_state').once('value');
-                const cloudState = snapshot.val();
-                if (cloudState) {
-                    localStorage.setItem('oera_state', JSON.stringify(cloudState));
+                try {
+                    const snapshot = await db.ref('oera_state').once('value');
+                    const cloudState = snapshot.val();
+                    if (cloudState) {
+                        localStorage.setItem('oera_state', JSON.stringify(cloudState));
+                        console.log("Login Sync: Cloud data updated");
+                    }
+                } catch (e) {
+                    console.error("Login Sync Failed:", e);
                 }
             }
 
-            // 2. Fetch Users
+            btn.innerHTML = 'Verifying...';
+            // 2. Fetch Users from local (now synced)
             let state = JSON.parse(localStorage.getItem('oera_state'));
             if (!state || !state.users || state.users.length === 0) {
                 state = defaultState;
