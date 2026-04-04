@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Portfolio Alerts System ---
-    if (state.user.role === 'Admin') {
+    if (state.user?.role === 'Admin') {
         setInterval(checkPortfolioRequests, 300000); // Check every 5 minutes
         checkPortfolioRequests(); // Initial check
     }
@@ -186,21 +186,21 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- Rendering Views ---
 function setupNavigation() {
     const links = document.querySelectorAll('.sidebar-link');
-    const userPerms = state.user.permissions || []; // Legacy support
+    const userPerms = state.user?.permissions || []; // Legacy support
 
     links.forEach(link => {
         const tab = link.dataset.tab;
 
         // Permission Check: Hide link if no access
         // Dashboard is usually always allowed, but we follow explicitly if defined
-        if (tab && !userPerms.includes(tab) && state.user.role !== 'Admin') {
+        if (tab && !userPerms.includes(tab) && state.user?.role !== 'Admin') {
             link.style.display = 'none';
         } else {
             link.style.display = 'flex';
         }
 
         // Special check for nav-database if it was given a tab attribute
-        if (tab === 'database' && !userPerms.includes('database') && state.user.role !== 'Admin') {
+        if (tab === 'database' && !userPerms.includes('database') && state.user?.role !== 'Admin') {
             link.style.display = 'none';
         }
 
@@ -212,7 +212,7 @@ function setupNavigation() {
                 e.preventDefault();
 
                 // Double Check Access on Click
-                if (!userPerms.includes(tab) && state.user.role !== 'Admin') {
+                if (!userPerms.includes(tab) && state.user?.role !== 'Admin') {
                     showToast('Access Denied');
                     return;
                 }
@@ -243,12 +243,12 @@ function renderContent() {
     area.classList.add('animate-soft-entry');
 
     try {
-        const userPerms = state.user.permissions || [];
+        const userPerms = state.user?.permissions || [];
         // Admin gets all passes
-        const hasAccess = state.user.role === 'Admin' || userPerms.includes(state.currentTab) || state.currentTab === 'dashboard'; // Pivot: Always allow dashboard? Or restrict? Let's restrict if not in list, but usually dashboard is base.
+        const hasAccess = state.user?.role === 'Admin' || userPerms.includes(state.currentTab) || state.currentTab === 'dashboard'; // Pivot: Always allow dashboard? Or restrict? Let's restrict if not in list, but usually dashboard is base.
         // Actually, user requested "kis kis chiz ka acces dena", potentially including dashboard.
 
-        if (!hasAccess && state.user.role !== 'Admin') {
+        if (!hasAccess && state.user?.role !== 'Admin') {
             area.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-slate-500">
                 <i data-lucide="shield-alert" class="w-16 h-16 text-slate-300 mb-4"></i>
                 <h3 class="text-xl font-bold text-slate-700">Access Restricted</h3>
@@ -353,6 +353,7 @@ function logActivity(type, desc) {
 }
 
 function renderSettings(container) {
+    const safeUser = state.user || { name: 'Guest', role: 'Visitor', target_monthly: 0 };
     const html = `
         <div class="max-w-2xl mx-auto space-y-6">
             <div class="glass-card p-6 rounded-2xl">
@@ -360,15 +361,15 @@ function renderSettings(container) {
                 <div class="grid gap-4">
                     <div>
                         <label class="block text-sm text-slate-500 mb-1">Display Name</label>
-                        <input type="text" value="${state.user.name}" onchange="updateUser('name', this.value)" class="w-full bg-white border border-slate-200 rounded p-2 text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input type="text" value="${safeUser.name}" onchange="updateUser('name', this.value)" class="w-full bg-white border border-slate-200 rounded p-2 text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                     <div>
                         <label class="block text-sm text-slate-500 mb-1">Role</label>
-                        <input type="text" value="${state.user.role}" disabled class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-slate-500 cursor-not-allowed">
+                        <input type="text" value="${safeUser.role}" disabled class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-slate-500 cursor-not-allowed">
                     </div>
                     <div>
                         <label class="block text-sm text-slate-500 mb-1">Daily Targets</label>
-                        <input type="number" value="${state.user.target_monthly}" onchange="updateUser('target_monthly', this.value)" class="w-full bg-white border border-slate-200 rounded p-2 text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input type="number" value="${safeUser.target_monthly || 0}" onchange="updateUser('target_monthly', this.value)" class="w-full bg-white border border-slate-200 rounded p-2 text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                 </div>
             </div>
@@ -673,7 +674,7 @@ function renderDashboard(container) {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             ${StatCard('Total Revenue', '$' + totalRevenue.toLocaleString(), 'trending-up', 'text-green-400', '+12%')}
             ${StatCard('Active Deals', state.deals.length, 'briefcase', 'text-blue-400', '5 new')}
-            ${StatCard('Calls Made', state.total_calls_made, 'phone-call', 'text-purple-400', `Target: ${state.user.target_monthly}`)}
+            ${StatCard('Calls Made', state.total_calls_made, 'phone-call', 'text-purple-400', `Target: ${state.user?.target_monthly || 0}`)}
             ${StatCard('Conversion Rate', conversionRate + '%', 'pie-chart', 'text-orange-400', 'Won/Calls')}
         </div>
 
