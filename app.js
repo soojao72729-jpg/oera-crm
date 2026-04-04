@@ -20,6 +20,10 @@ const defaultState = {
 
 // --- Global State & Config ---
 let state = JSON.parse(localStorage.getItem('oera_state')) || defaultState;
+if (!state.deals) state.deals = [];
+if (!state.companies) state.companies = [];
+if (!state.activities) state.activities = [];
+if (!state.total_calls_made) state.total_calls_made = 0;
 let backupFolderHandle = null; // New: For custom save location
 let desktopBackupPath = localStorage.getItem('oera_desktop_path') || 'C:\\OERA_CRM_Backups'; // Electron Specific
 
@@ -52,6 +56,10 @@ if (!localStorage.getItem('oera_state')) {
         saveState();
     }
 }
+
+function checkPortfolioRequests() {}
+function updateDashboardKPIs() {}
+function initChart(start, end) {}
 
 function checkPermissions() {
     const userPerms = state.user?.permissions || [];
@@ -167,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update Sidebar Profile
     const user = state.user || { name: 'Guest', role: 'Visitor' };
-    const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    const initials = (user.name || 'Guest').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
     const nameEl = document.getElementById('user-name');
     const roleEl = document.getElementById('user-role');
@@ -664,7 +672,7 @@ async function syncWithCloud() { }
 // --- Dashboard Component ---
 function renderDashboard(container) {
     // KPI Calculations
-    const totalRevenue = state.deals.reduce((acc, deal) => acc + deal.value, 0);
+    const totalRevenue = state.deals.reduce((acc, deal) => acc + (Number(deal.value) || 0), 0);
     const wonDeals = state.deals.filter(d => d.stage === 'Closed Won').length;
 
     // Formula: Conversion Rate = (Deals Won / Total Calls Made) * 100
@@ -757,7 +765,7 @@ function renderDashboard(container) {
                 <div class="space-y-4">
                     ${state.deals.filter(d => d.stage === 'Proposal Sent').slice(0, 5).map(deal => {
         const company = state.companies.find(c => c.company_id === deal.company_id);
-        return ActivityItem('Proposal Sent', `To: ${company ? company.company_name : 'Unknown'}`, `$${deal.value.toLocaleString()}`, 'file-text');
+        return ActivityItem('Proposal Sent', `To: ${company ? company.company_name : 'Unknown'}`, `$${(Number(deal.value) || 0).toLocaleString()}`, 'file-text');
     }).join('') || '<p class="text-slate-500 text-sm italic">No recent proposals.</p>'}
                 </div>
             </div>
@@ -943,18 +951,18 @@ function renderPipeline(container) {
                 
                 <!-- Action Buttons -->
                 ${(state.user.role === 'Admin' || state.user.permissions?.includes('can_edit_pipeline')) ? `
-                <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all flex gap-1 translate-y-1 group-hover:translate-y-0">
-                     <button onclick="openDealModal(${deal.deal_id})" class="p-2 bg-slate-50 hover:bg-white rounded-xl text-slate-400 hover:text-blue-600 shadow-sm border border-slate-100" title="Edit">
+                <div class="absolute top-4 right-4 flex gap-1">
+                     <button onclick="openDealModal('${deal.deal_id}')" class="p-2 bg-slate-50 hover:bg-white rounded-xl text-slate-400 hover:text-blue-600 shadow-sm border border-slate-100" title="Edit">
                         <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                      </button>
-                     <button onclick="deleteDeal(${deal.deal_id})" class="p-2 bg-slate-50 hover:bg-white rounded-xl text-slate-400 hover:text-red-500 shadow-sm border border-slate-100" title="Delete">
+                     <button onclick="deleteDeal('${deal.deal_id}')" class="p-2 bg-slate-50 hover:bg-white rounded-xl text-slate-400 hover:text-red-500 shadow-sm border border-slate-100" title="Delete">
                         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                      </button>
                 </div>
                 ` : ''}
 
                 <div class="mb-4">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">ID: #${deal.deal_id.toString().slice(-6)}</span>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">ID: #${String(deal.deal_id || '000000').slice(-6)}</span>
                     <h4 class="font-bold text-slate-900 text-base leading-tight group-hover:text-${stage.color}-600 transition-colors">${company ? company.company_name : 'Unknown Corp'}</h4>
                 </div>
                 
@@ -967,7 +975,7 @@ function renderPipeline(container) {
                 <div class="flex items-center justify-between pt-4 border-t border-slate-50">
                     <div class="flex flex-col">
                         <span class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Value</span>
-                        <span class="text-sm font-black text-slate-900">$${deal.value.toLocaleString()}</span>
+                        <span class="text-sm font-black text-slate-900">$${(Number(deal.value) || 0).toLocaleString()}</span>
                     </div>
                     <div class="flex flex-col items-end text-right">
                         <span class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Closing</span>
@@ -1431,9 +1439,9 @@ function openDealModal(dealId = null) {
         `<option value="${c.company_id}">${c.company_name}</option>`
     ).join('');
 
-    if (dealId) {
+    if (dealId && dealId !== 'undefined' && dealId !== 'null') {
         // Edit Mode
-        const deal = state.deals.find(d => d.deal_id === dealId);
+        const deal = state.deals.find(d => String(d.deal_id) === String(dealId));
         title.textContent = 'Edit Deal';
         document.getElementById('deal-id').value = deal.deal_id;
         document.getElementById('deal-value').value = deal.value;
@@ -1492,7 +1500,7 @@ function handleDealSubmit(e) {
 
 function deleteDeal(dealId) {
     if (confirm('Are you sure you want to delete this deal?')) {
-        state.deals = state.deals.filter(d => d.deal_id !== dealId);
+        state.deals = state.deals.filter(d => String(d.deal_id) !== String(dealId));
         saveState();
         renderContent();
         showToast('Deal Deleted');
