@@ -70,7 +70,7 @@ function renderSidebar() {
             : '';
 
         return `
-        <button onclick="switchTable('${t}')" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${currentTable === t ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'}">
+        <button onclick="switchTable('${t}')" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${currentTable === t ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}">
             <div class="flex items-center gap-3">
                 <i data-lucide="${icon}" class="w-4 h-4"></i>
                 <span class="capitalize">${label}</span>
@@ -119,15 +119,15 @@ function renderTable() {
 function renderObjectEditor(obj, container) {
     const fields = Object.keys(obj).map(key => `
         <div class="mb-4">
-            <label class="block text-xs font-medium text-slate-500 uppercase mb-1">${key}</label>
-            <input type="text" onchange="updateObjectField('${key}', this.value)" value="${obj[key]}" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2 text-sm text-slate-900 focus:outline-none focus:border-blue-500 shadow-sm">
+            <label class="block text-xs font-medium text-slate-400 uppercase mb-1">${key}</label>
+            <input type="text" onchange="updateObjectField('${key}', this.value)" value="${obj[key]}" class="w-full bg-slate-800/50 border border-white/5 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 shadow-sm transition-all">
         </div>
     `).join('');
 
     container.innerHTML = `
-        <div class="bg-white p-6 rounded-xl border border-slate-200 max-w-lg shadow-sm">
+        <div class="glass-card p-6 rounded-xl border border-white/5 max-w-lg shadow-2xl">
             ${fields}
-            <div class="mt-4 p-3 bg-blue-50 text-blue-600 rounded-lg text-xs flex items-center gap-2 border border-blue-100">
+            <div class="mt-4 p-3 bg-blue-500/10 text-blue-400 rounded-lg text-xs flex items-center gap-2 border border-blue-500/20">
                 <i data-lucide="info" class="w-4 h-4"></i> Changes autosave
             </div>
         </div>
@@ -150,8 +150,8 @@ function renderArrayEditor(rows, container, warning = '') {
 
     const headers = Object.keys(rows[0]);
 
-    const headerHtml = headers.map(h => `<th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider bg-slate-50 border-b border-slate-200">${h}</th>`).join('');
-    headerHtml + `<th class="px-4 py-3 bg-slate-50 border-b border-slate-200"></th>`; // Actions
+    const headerHtml = headers.map(h => `<th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider bg-slate-900/50 border-b border-white/10">${h}</th>`).join('');
+    headerHtml + `<th class="px-4 py-3 bg-slate-900/50 border-b border-white/10"></th>`; // Actions
 
     const rowsHtml = rows.map((row, index) => {
         const delayClass = `stagger-${(index % 5) + 1}`;
@@ -160,10 +160,10 @@ function renderArrayEditor(rows, container, warning = '') {
 
             if (key === 'profile_pic') {
                 return `
-                    <td class="px-4 py-3 border-b border-slate-100 min-w-[120px]">
+                    <td class="px-4 py-3 border-b border-white/5 min-w-[120px]">
                         <div class="flex items-center gap-2">
-                            <img src="${val || 'https://i.pravatar.cc/150?img=11'}" class="w-8 h-8 rounded-full border border-slate-200 object-cover shadow-sm bg-slate-100">
-                            <label class="p-1 hover:bg-blue-50 rounded cursor-pointer text-blue-500 transition-colors">
+                            <img src="${val || 'https://i.pravatar.cc/150?img=11'}" class="w-8 h-8 rounded-full border border-white/10 object-cover shadow-sm bg-slate-800">
+                            <label class="p-1 hover:bg-blue-500/20 rounded cursor-pointer text-blue-400 transition-colors">
                                 <i data-lucide="upload" class="w-3 h-3"></i>
                                 <input type="file" class="hidden" onchange="handleRowImage(${index}, '${key}', this)" accept="image/*">
                             </label>
@@ -173,25 +173,25 @@ function renderArrayEditor(rows, container, warning = '') {
             }
 
             return `
-                <td class="px-4 py-3 border-b border-slate-100">
+                <td class="px-4 py-3 border-b border-white/5">
                     <input type="text" value="${val}" onchange="updateRow(${index}, '${key}', this.value)" 
-                    class="bg-transparent text-sm text-slate-700 w-full focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 rounded px-1 transition-all">
+                    class="bg-transparent text-sm text-slate-300 w-full focus:outline-none focus:bg-white/5 focus:ring-1 focus:ring-blue-500 rounded px-1 transition-all">
                 </td>
             `;
         }).join('');
 
         return `
-            <tr class="animate-soft-entry ${delayClass} hover:bg-slate-50 transition-colors group">
+            <tr class="animate-soft-entry ${delayClass} hover:bg-white/5 transition-colors group">
                 ${cells}
-                <td class="px-4 py-3 border-b border-slate-100 text-right flex items-center justify-end gap-2">
+                <td class="px-4 py-3 border-b border-white/5 text-right flex items-center justify-end gap-2">
                     ${currentTable === 'pending_users' ? `
-                        <button onclick="approveUser(${index})" class="text-green-500 hover:bg-green-100 p-1.5 rounded" title="Approve"><i data-lucide="check" class="w-4 h-4"></i></button>
-                        <button onclick="rejectUser(${index})" class="text-red-500 hover:bg-red-100 p-1.5 rounded" title="Reject"><i data-lucide="x" class="w-4 h-4"></i></button>
+                        <button onclick="approveUser(${index})" class="text-green-400 hover:bg-green-500/20 p-1.5 rounded" title="Approve"><i data-lucide="check" class="w-4 h-4"></i></button>
+                        <button onclick="rejectUser(${index})" class="text-red-400 hover:bg-red-500/20 p-1.5 rounded" title="Reject"><i data-lucide="x" class="w-4 h-4"></i></button>
                     ` : `
-                        <button onclick="deleteRow(${index})" class="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 p-1.5 rounded"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        <button onclick="deleteRow(${index})" class="text-red-400 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/20 p-1.5 rounded"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     `}
                     ${currentTable === 'users' ? `
-                        <button onclick="editPermissions(${index})" class="text-purple-500 hover:bg-purple-100 p-1.5 rounded ml-1" title="Access Control"><i data-lucide="key" class="w-4 h-4"></i></button>
+                        <button onclick="editPermissions(${index})" class="text-purple-400 hover:bg-purple-500/20 p-1.5 rounded ml-1" title="Access Control"><i data-lucide="key" class="w-4 h-4"></i></button>
                     ` : ''}
                 </td>
             </tr>
@@ -200,14 +200,14 @@ function renderArrayEditor(rows, container, warning = '') {
 
     container.innerHTML = `
         ${warning}
-        <div class="overflow-x-auto border border-slate-200 rounded-xl shadow-lg bg-white">
+        <div class="overflow-x-auto border border-white/10 rounded-xl shadow-2xl bg-transparent">
             <table class="w-full text-left border-collapse">
-                <thead><tr>${headerHtml}<th class="w-20 bg-slate-50 border-b border-slate-200"></th></tr></thead>
+                <thead><tr>${headerHtml}<th class="w-20 bg-slate-900/50 border-b border-white/10"></th></tr></thead>
                 <tbody>${rowsHtml}</tbody>
             </table>
         </div>
         ${currentTable !== 'pending_users' ? `
-        <button onclick="addRow()" class="mt-4 flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-500 px-4 py-2 hover:bg-blue-50 rounded-lg transition-colors">
+        <button onclick="addRow()" class="mt-4 flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 px-4 py-2 hover:bg-white/5 rounded-lg transition-colors border border-white/5">
             <i data-lucide="plus-circle" class="w-4 h-4"></i> Add New Record
         </button>` : ''}
     `;
@@ -374,7 +374,7 @@ function initAutoBackup() { }
 
 function showToast(msg) {
     const toast = document.createElement('div');
-    toast.className = 'fixed bottom-4 right-4 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-2xl z-50 animate-soft-entry flex items-center gap-2';
+    toast.className = 'fixed bottom-4 right-4 bg-slate-900 border border-white/10 text-white px-6 py-3 rounded-lg shadow-2xl z-50 animate-soft-entry flex items-center gap-2 backdrop-blur-xl';
     toast.style.zIndex = "9999";
     toast.innerHTML = `<i data-lucide='check-circle' class='w-5 h-5'></i> ${msg}`;
     document.body.appendChild(toast);
